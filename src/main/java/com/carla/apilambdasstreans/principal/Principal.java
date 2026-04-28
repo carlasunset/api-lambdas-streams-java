@@ -9,9 +9,7 @@ import com.carla.apilambdasstreans.service.ConverteDados;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
@@ -46,20 +44,13 @@ public class Principal {
 
         List<DadosEpisodio> dadosEpisodios = temporadas.stream().flatMap(t -> t.episodios().stream()).collect(Collectors.toList());
 
-//        System.out.println("\nTop 5 episódios:");
-//        dadosEpisodios.stream()
-//                .filter(x -> !x.avaliacao().equalsIgnoreCase("N/A"))
-//                .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
-//                .limit(5)
-//                .forEach(System.out::println);
-
         List<Episodio> episodios = temporadas.stream()
                 .flatMap(t -> t.episodios().stream()
                         .map( e -> new Episodio(t.temporada(), e))).collect(Collectors.toList());
 
         episodios.forEach(System.out::println);
 
-        System.out.println("A partir de que ano voce deseja ver os episódios?: ");
+        System.out.print("A partir de que ano voce deseja ver os episódios?: ");
         int ano = LEITURA.nextInt();
         LEITURA.nextLine();
 
@@ -71,5 +62,28 @@ public class Principal {
                 .forEach(ep -> System.out.println("Temporada: " + ep.getTemporada() +
                                 " Episódio: " + ep.getTitulo() +
                                 " Data de lançamento: " + ep.getDataLancamento().format(formatter)));
+
+        System.out.println("\nTop 5 episódios:");
+        dadosEpisodios.stream()
+                .filter(x -> !x.avaliacao().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+                .limit(5)
+                .forEach(System.out::println);
+
+        //encontrando a primeira ocorrência de uma busca a uma coleção
+        System.out.print("\nDigite o nome do episódio: ");
+        String trechoTitulo = LEITURA.nextLine();
+
+        Optional<Episodio> episodioBuscado = episodios.stream()
+                .filter(x -> x.getTitulo().toLowerCase().contains(trechoTitulo.toLowerCase()))
+                .findFirst();
+
+        if(episodioBuscado.isPresent()){
+            System.out.println("Episódio encontrado! " + episodioBuscado.get().getTitulo());
+            System.out.println("Temporada: " + episodioBuscado.get().getTemporada() + " Episódio: " + episodioBuscado.get().getNumeroEpisodio());
+        } else {
+            System.out.println("Episódio não encontrado!");
+        }
+
     }
 }
